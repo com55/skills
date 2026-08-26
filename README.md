@@ -14,10 +14,36 @@ install the same way everywhere.
   the change should exist before checking whether it works; traces the
   real call graph, not just the diff.
 
-## Install — skills
+## Install
 
-Uses [`npx skills`](https://github.com/vercel-labs/skills), which auto-detects
-Claude Code and Cursor and installs into the right directory for each:
+```bash
+npx github:com55/skills
+# or, to install just one skill/agent by name:
+npx github:com55/skills --only scrutinize-reviewer
+```
+
+One command installs everything this repo has: every `skills/<name>/`
+directory goes to `~/.claude/skills/` *and* `~/.agents/skills/` (the
+latter is the emerging vendor-neutral convention, e.g. OpenCode reads it
+too), and every `agents/*.md` goes to `~/.claude/agents/`. Cursor reads
+`~/.claude/skills/` and `~/.claude/agents/` natively, so this one command
+covers Claude Code and Cursor both — no separate Cursor-specific step.
+
+`--only <name>` installs just the skill and/or agent with that name (e.g.
+`--only grounded-python` installs only the skill — there's no matching
+agent for it, and that's fine; `--only scrutinize-reviewer` installs both
+the skill and the agent, since both exist under that name).
+
+Start a new session in your harness afterwards to pick up what was
+installed.
+
+### Alternative: `npx skills add`
+
+If you already use [`npx skills`](https://github.com/vercel-labs/skills)
+(it auto-detects installed coding agents and handles more harnesses than
+just Claude Code/Cursor), it works for the skills half of this repo too —
+it just has no concept of the `agents/` directory, so `scrutinize-reviewer`
+installed this way only gets the skill, not the agent:
 
 ```bash
 npx skills add com55/skills --skill grounded-python
@@ -25,23 +51,6 @@ npx skills add com55/skills --skill scrutinize-reviewer
 # or, all of them:
 npx skills add com55/skills --skill '*'
 ```
-
-## Install — agents
-
-`npx skills` only ever installs `SKILL.md` files — it has no concept of
-subagents. This repo's `agents/` directory needs its own install step:
-
-```bash
-npx github:com55/skills
-# or, to install just one agent:
-npx github:com55/skills --only scrutinize-reviewer
-```
-
-This copies into `~/.claude/agents/` — Cursor reads that same directory
-natively (alongside its own `~/.cursor/agents/`), so this one step covers
-both Claude Code and Cursor.
-
-Start a new session in your harness afterwards to pick up the new agent.
 
 ## Workflow glue (manual step)
 

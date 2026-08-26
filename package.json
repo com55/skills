@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "com55's personal Claude Code / Cursor skills and agents",
   "bin": {
-    "skills-agents-install": "./install-agents.js"
+    "skills-install": "./install.js"
   },
   "files": [
+    "skills/",
     "agents/",
-    "install-agents.js"
+    "install.js"
   ],
   "keywords": [
     "claude-code",
@@ -18,6 +19,6 @@
   "author": "com55",
   "license": "MIT",
   "engines": {
-    "node": ">=14"
+    "node": ">=16.7"
   }
 }
