@@ -1,0 +1,23 @@
+{
+  "name": "com55-skills",
+  "version": "1.0.0",
+  "description": "com55's personal Claude Code / Cursor skills and agents",
+  "bin": {
+    "skills-agents-install": "./install-agents.js"
+  },
+  "files": [
+    "agents/",
+    "install-agents.js"
+  ],
+  "keywords": [
+    "claude-code",
+    "cursor",
+    "claude-skill",
+    "subagent"
+  ],
+  "author": "com55",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  }
+}
