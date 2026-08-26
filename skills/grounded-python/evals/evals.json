@@ -1,0 +1,23 @@
+{
+  "skill_name": "grounded-python",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "เขียน Python function ที่ใช้ pandas อ่านไฟล์ CSV ชื่อ 'sales.csv' แล้ว group by คอลัมน์ 'region' และคำนวณ mean ของ 'revenue' แล้วเรียงจากมากไปน้อย",
+      "expected_output": "Claude ต้อง lookup pandas docs ผ่าน Context7 ก่อน (read_csv, groupby, agg/mean, sort_values) แล้วค่อยเขียน code ที่ใช้ argument ถูกต้อง",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "ใช้ method `UserRepository.get_by_email(email)` จาก `app/repositories/user_repo.py` เพื่อดึงข้อมูล user แล้ว update field `last_login` เป็น timestamp ปัจจุบัน",
+      "expected_output": "Claude ต้อง grep หา UserRepository ใน app/repositories/user_repo.py ก่อน ถ้าไม่เจอต้องหยุดถามผู้ใช้ทันที ห้ามเดา signature",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "เขียน FastAPI endpoint POST /items ที่รับ request body เป็น Pydantic model มี field: name (str), price (float), in_stock (bool) แล้ว save ลง SQLAlchemy model ชื่อ Item",
+      "expected_output": "Claude ต้อง lookup FastAPI, Pydantic, SQLAlchemy ผ่าน Context7 ก่อนทั้ง 3 libraries แล้วค่อยเขียน code",
+      "files": []
+    }
+  ]
+}
