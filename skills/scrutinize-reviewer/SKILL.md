@@ -28,7 +28,7 @@ Keep each dispatch a fresh subagent even when passing a diff for context — the
 
 ## Usage pattern: SDD per-task augmentation
 
-When running subagent-driven-development (or a variant like qwen-fable-sdd), dispatch `scrutinize-reviewer` as an extra pass per task, in addition to — not instead of — the flow's normal task-reviewer:
+When running subagent-driven-development (or any variant of it), dispatch `scrutinize-reviewer` as an extra pass per task, in addition to — not instead of — the flow's normal task-reviewer:
 
 - Task-reviewer verdict = conformance to brief.
 - Scrutinize verdict = is this actually the best way to have done it.

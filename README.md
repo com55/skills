@@ -82,7 +82,38 @@ extends with subagent dispatch + spec-loop/SDD usage patterns.
 
 ## Origin of each skill
 
-*(to be filled in — background/history per skill)*
+### grounded-python
+
+Born from working with libraries that update often, libraries with
+breaking changes across versions, and custom/bespoke modules and
+functions. Repeatedly, an agent would write code straight from its
+pretrained knowledge without checking whether that was still the correct
+way to call a given library — producing code that didn't work, was
+outdated, or misused the API. This skill exists to force verification of
+the actual correct usage before writing, cutting off that whole failure
+mode. Most useful for anyone working with custom/bespoke code, where
+there's no well-known "obvious" API for the agent to fall back on and it
+would otherwise just make something up. Costs a modest amount of extra
+tokens per use.
+
+Intended direction: make this generic enough to apply to any language or
+stack, not just Python — it isn't yet, but that's the goal.
+
+### scrutinize-reviewer
+
+Grew out of using the `scrutinize` skill from
+[thananon/9arm-skills](https://github.com/thananon/9arm-skills) and
+liking it a lot — it reviews code/spec quality, catches bugs and
+vulnerabilities, and surfaces better ways to reach the same goal. Used it
+constantly, including on specs before any implementation starts, to catch
+problems and find better approaches while everything is still on paper.
+Wired it into the subagent-driven-development workflow as an addition to
+the existing per-task review, which normally only checks whether the
+agent's output matches the spec — but matching the brief doesn't mean
+it's the best way to have done it. The extra scrutinize pass catches more
+issues and better approaches along the way. Changes the shape of the
+workflow and uses meaningfully more tokens — worth it for anything where
+getting it right matters more than moving fast.
 
 ## License
 
