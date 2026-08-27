@@ -25,7 +25,9 @@ npx github:com55/skills --only scrutinize-reviewer
 One command installs everything this repo has: every `skills/<name>/`
 directory goes to `~/.claude/skills/` *and* `~/.agents/skills/` (the
 latter is the emerging vendor-neutral convention, e.g. OpenCode reads it
-too), and every `agents/*.md` goes to `~/.claude/agents/`. Cursor reads
+too), and every `agents/*.md` goes to `~/.claude/agents/` *and*
+`~/.agents/agents/` (no tool is confirmed to read that second path yet —
+it's a cheap bet on the same convention extending to agents). Cursor reads
 `~/.claude/skills/` and `~/.claude/agents/` natively, so this one command
 covers Claude Code and Cursor both — no separate Cursor-specific step.
 
