@@ -96,9 +96,6 @@ there's no well-known "obvious" API for the agent to fall back on and it
 would otherwise just make something up. Costs a modest amount of extra
 tokens per use.
 
-Intended direction: make this generic enough to apply to any language or
-stack, not just Python — it isn't yet, but that's the goal.
-
 ### scrutinize-reviewer
 
 Grew out of using the `scrutinize` skill from
