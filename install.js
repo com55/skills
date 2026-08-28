@@ -43,6 +43,13 @@ function installSkills(only) {
     for (const destRoot of SKILLS_DESTS) {
       fs.mkdirSync(destRoot, { recursive: true });
       const dest = path.join(destRoot, name);
+      // A stale non-directory left at dest (e.g. from an older, single-file
+      // install of this skill) makes cpSync throw ERR_FS_CP_DIR_TO_NON_DIR
+      // instead of just overwriting it — clear it first so installs are
+      // idempotent regardless of what was there before.
+      if (fs.existsSync(dest)) {
+        fs.rmSync(dest, { recursive: true, force: true });
+      }
       fs.cpSync(src, dest, { recursive: true });
       console.log(`installed skill: ${dest}`);
     }
@@ -58,6 +65,10 @@ function installAgents(only) {
     for (const destRoot of AGENTS_DESTS) {
       fs.mkdirSync(destRoot, { recursive: true });
       const dest = path.join(destRoot, file);
+      // Same stale-non-matching-type guard as installSkills above.
+      if (fs.existsSync(dest) && fs.statSync(dest).isDirectory()) {
+        fs.rmSync(dest, { recursive: true, force: true });
+      }
       fs.copyFileSync(path.join(AGENTS_SRC, file), dest);
       console.log(`installed agent: ${dest}`);
     }
