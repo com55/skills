@@ -19,20 +19,33 @@ This skill is read by the orchestrator (you) to decide **when** and **how** to d
 
 1. A spec/plan comes out of brainstorming, writing-plans, or similar.
 2. Dispatch `scrutinize-reviewer` against the spec (fresh subagent — new dispatch, not a continued conversation).
-3. Report findings/verdict back to whoever owns the spec.
-4. Revise the spec based on the findings.
-5. Re-dispatch — optionally include a diff of what changed since the last round, so the reviewer can also judge whether *this revision* is actually an improvement, not just review the new spec cold.
-6. Repeat 3-5 until the verdict is ship / fix-then-ship with only nits left.
+3. Report findings/verdict back to whoever owns the spec — then **stop and wait**. Do not revise the spec or re-dispatch on your own.
+4. Only continue if the user asks for another round, or told you upfront to loop automatically until clean. If they do: revise the spec based on the findings, then re-dispatch — optionally include a diff of what changed since the last round, so the reviewer can also judge whether *this revision* is actually an improvement, not just review the new spec cold.
+5. Repeat 3-4 (report → wait → revise-if-asked → re-dispatch) until the verdict is ship / fix-then-ship with only nits left.
 
 Keep each dispatch a fresh subagent even when passing a diff for context — the point is the reviewer has no attachment to *why* the previous round happened, only to what changed.
 
+**Do not auto-loop.** Each round can run on an expensive model, so it has a real per-round cost — a "reject"/"rework" verdict is a reason to report and ask, not a trigger to silently re-dispatch.
+
 ## Usage pattern: SDD per-task augmentation
 
-When running subagent-driven-development (or any variant of it), dispatch `scrutinize-reviewer` as an extra pass per task, in addition to — not instead of — the flow's normal task-reviewer:
+When running subagent-driven-development (or any variant of it), dispatch `scrutinize-reviewer` as an extra pass per task, in addition to — not instead of — the flow's normal task-reviewer. Structure it as a loop — implementer → verify → reviewer → adjudicate → ledger → report → STOP — with one rule: **the first scrutinize dispatch per task-cycle (one approval to work the task) is automatic; a second (or further) dispatch inside that same cycle — to re-verify a fix — requires stopping and asking first.** One approval buys exactly one unattended scrutinize round; looping to another round within the same cycle is never silent.
 
-- Task-reviewer verdict = conformance to brief.
-- Scrutinize verdict = is this actually the best way to have done it.
-- A task can pass the first and still get a non-trivial finding from the second. Non-blocking findings (nits, "could be simpler") are reported, not auto-applied — whether to act on them is a call for whoever owns the task.
+```
+task done → verify independently → dispatch scrutinize (round 1, automatic) → adjudicate
+  → clean/nits-only: ledger → report → STOP
+  → blocking finding: dispatch fix (subagent) → verify independently → ASK before round 2 → (if yes) dispatch scrutinize round 2 → adjudicate → ... → ledger → report → STOP
+```
+
+- Task-reviewer verdict (the flow's own, if it has one) = conformance to brief. Scrutinize verdict = is this actually the best way to have done it. A task can pass the first and still get a non-trivial finding from the second.
+- **Verify independently first**, both before the initial scrutinize dispatch and after any fix — check the implementer's/fixer's actual output yourself (diff, tests), don't hand scrutinize a self-report you haven't looked at.
+- **Round 1 is automatic.** Dispatch scrutinize once per task-cycle without asking first — that's the whole point of the augmentation.
+- **Adjudicate the verdict:**
+  - Ship / only Minor or Nit findings: record each as deferred in the ledger (tagged to whichever later/related task it actually belongs to), mark this task complete, report, stop.
+  - Critical/Important (blocking) findings: dispatch the fix as its own subagent task, verify it independently, then **stop and ask before dispatching scrutinize round 2** on just the fix diff — never auto-loop this step, even though round 1 didn't need asking. If approved and round 2 still isn't clean, ask again before round 3, and so on — every round after the first needs its own go-ahead. Cap the number of fix-loop rounds the way the parent SDD flow does, and surface it to whoever owns the task if you hit the cap without a clean result rather than silently continuing.
+  - A finding that's really about the task's brief/spec rather than the implementation: surface it instead of silently picking a side.
+- **Defer, don't fix everything now.** Anything non-blocking gets carried forward explicitly into whichever later/related task's own dispatch prompt it belongs to, rather than expanding this task's scope to fix it here.
+- Report what was found, what (if anything) got fixed, and what's deferred — then stop and wait for the next explicit go-ahead before starting another task.
 
 ## Model selection
 
@@ -47,7 +60,7 @@ You choose the model when you dispatch, via the Agent tool's `model` parameter �
 
 - Pick the model per "Model selection" above.
 - Give the subagent everything it needs in the prompt — it starts with zero context. For a diff-aware re-dispatch, include both the current artifact and what changed since the last round.
-- Read the returned verdict before deciding the next step; a "reject" or "rework" verdict means loop again, not proceed.
+- Read the returned verdict, then report it to whoever owns the task and stop; a "reject" or "rework" verdict means the next step is their call, not an automatic re-loop.
 
 ## Fallback: no installed agent
 
